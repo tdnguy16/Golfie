@@ -156,14 +156,13 @@ class poseDetector():
         if draw:
             cv2.line(img, (int(self.data[0]), int(y1)-300), (int(self.data[0]), int(y1)+300), (0, 255, 0), 3)
 
-    def headlevel(self, img, p1, draw = True):
+    def headmove(self, img, p1, draw = True):
         # Get the landmarks
         x1, y1 = self.lmList[p1][1:]
-
-        self.data.append(y1)
+        self.data.append(x1)
 
         if draw:
-            cv2.line(img, (int(x1)-300, int(self.data[0])), (int(x1)+300, int(self.data[0])), (0, 255, 0), 3)
+            cv2.line(img, (int(self.data[0]), int(y1)-300), (int(self.data[0]), int(y1)+300), (0, 255, 0), 3)
 
     def lag(self, img, p1, p2, p3, p4, draw=True):
         # Get the landmarks
