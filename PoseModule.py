@@ -147,8 +147,14 @@ class poseDetector():
                 cv2.putText(img, str(standarddev), (int(x2) - 90, int(y2) + -200),
                             cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
 
+    def hipmove(self, img, p1, p2, draw = True):
+        # Get the landmarks
+        x1, y1 = self.lmList[p1][1:]
 
+        self.data.append(x1)
 
+        if draw:
+            cv2.line(img, (int(self.data[0]), int(y1)-300), (int(self.data[0]), int(y1)+300), (0, 255, 0), 3)
 
     def lag(self, img, p1, p2, p3, p4, draw=True):
         # Get the landmarks
