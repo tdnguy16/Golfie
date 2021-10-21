@@ -2,6 +2,8 @@ import cv2
 import mediapipe as mp
 import time
 import math
+import csv
+import statistics
 
 class poseDetector():
 
@@ -23,6 +25,7 @@ class poseDetector():
         self.detectionCon = detectionCon
         self.trackCon = trackCon
 
+        self.data = []
         self.mpDraw = mp.solutions.drawing_utils
         self.mpPose = mp.solutions.pose
         self.pose = self.mpPose.Pose(self.mode, self.model_complexity, self.smooth_landmarks,self.enable_segmentation,self.smooth_segmentation,self.detectionCon, self.trackCon)
@@ -103,6 +106,7 @@ class poseDetector():
                         cv2.FONT_HERSHEY_PLAIN,2,(0,0,255),2)
 
     def spineangle(self, img, draw = True):
+
         # Get the landmarks
         x1, y1 = (self.lmList[11][1]+self.lmList[12][1])/2 , (self.lmList[11][2]+self.lmList[12][2])/2
         x2, y2 = (self.lmList[23][1]+self.lmList[24][1])/2 , (self.lmList[23][2]+self.lmList[24][2])/2
@@ -114,20 +118,37 @@ class poseDetector():
         if angle <0:
             angle += 360
 
-        #print(angle)
+        # Append data to list
+        self.data.append(angle)
 
-        # Draw
-        if draw:
-            cv2.line(img,(int(x1), int(y1)),(int(x2), int(y2)),(0,255,0),3)
-            cv2.line(img,(int(x2), int(y2)),(int(x3), int(y3)),(0,255,0),3)
-            cv2.circle(img, (int(x1), int(y1)), 10, (0, 0, 255), cv2.FILLED)
-            cv2.circle(img, (int(x1), int(y1)), 15, (0, 0, 255), 2)
-            cv2.circle(img, (int(x2), int(y2)), 10, (0, 0, 255), cv2.FILLED)
-            cv2.circle(img, (int(x2), int(y2)), 15, (0, 0, 255), 2)
-            cv2.circle(img, (int(x3), int(y3)), 10, (0, 0, 255), cv2.FILLED)
-            cv2.circle(img, (int(x3), int(y3)), 15, (0, 0, 255), 2)
-            cv2.putText(img, str(int(angle)),(int(x2)-90,int(y2)+20),
-                        cv2.FONT_HERSHEY_PLAIN,2,(0,0,255),2)
+        # Save angle data to csv file
+        header = ['Spine Angle']
+        with open('spineangle.csv', 'w', encoding='UTF8', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(header)
+            for val in self.data:
+                writer.writerow([val])
+
+        if len(self.data) > 2:
+            standarddev = format(statistics.stdev(self.data), '.2f')
+
+            # Draw
+            if draw:
+                cv2.line(img,(int(x1), int(y1)),(int(x2), int(y2)),(0,255,0),3)
+                cv2.line(img,(int(x2), int(y2)),(int(x3), int(y3)),(0,255,0),3)
+                cv2.circle(img, (int(x1), int(y1)), 10, (0, 0, 255), cv2.FILLED)
+                cv2.circle(img, (int(x1), int(y1)), 15, (0, 0, 255), 2)
+                cv2.circle(img, (int(x2), int(y2)), 10, (0, 0, 255), cv2.FILLED)
+                cv2.circle(img, (int(x2), int(y2)), 15, (0, 0, 255), 2)
+                cv2.circle(img, (int(x3), int(y3)), 10, (0, 0, 255), cv2.FILLED)
+                cv2.circle(img, (int(x3), int(y3)), 15, (0, 0, 255), 2)
+                cv2.putText(img, str(int(angle)),(int(x2)-90,int(y2)+20),
+                            cv2.FONT_HERSHEY_PLAIN,2,(0,0,255),2)
+                cv2.putText(img, str(standarddev), (int(x2) - 90, int(y2) + -200),
+                            cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
+
+
+
 
     def lag(self, img, p1, p2, p3, p4, draw=True):
         # Get the landmarks
@@ -196,9 +217,9 @@ class poseDetector():
 
 
 
+
 def main():
     cap = cv2.VideoCapture('Videos/5.mp4')
-    #'Videos/4.mp4'
     pTime = 0
     detector = poseDetector()
     while True:

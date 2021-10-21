@@ -3,7 +3,7 @@ import numpy as np
 import time
 import PoseModule as pm
 
-cap = cv2.VideoCapture("Videos/3.mp4")
+cap = cv2.VideoCapture("Videos/tien2.mp4")
 
 detector = pm.poseDetector()
 
@@ -15,11 +15,11 @@ while True:
     lmList = detector.findPosition(img, False)
     #print(lmList)
     if len(lmList) != 0:
-        #detector.findAngle(img,23,25,27) #Leg Angle
-        #detector.findanglehoz(img,13,11) #Swing Plane
-        #.spineangle(img)  # Spine Angle
-        #detector.lag(img,11,12,23,24) #Chest and hip rotation
-        detector.hinge(img, 13, 15) #
+        #detector.findAngle(img,23,25,27)   #Leg Angle
+        #detector.findanglehoz(img,13,11)   #Swing Plane
+        detector.spineangle(img)           #Spine Angle
+        #detector.lag(img,11,12,23,24)      #Chest and hip rotation
+        #detector.hinge(img, 13, 15)        #Hinge
 
 
     cv2.imshow("Image", img)
