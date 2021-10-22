@@ -3,7 +3,7 @@ import numpy as np
 import time
 import PoseModule as pm
 
-cap = cv2.VideoCapture("Videos/3.mp4")
+cap = cv2.VideoCapture("Videos/tien4.mp4")
 
 detector = pm.poseDetector()
 
@@ -21,7 +21,7 @@ while True:
         #detector.lag(img,11,12,23,24)      #Chest and hip rotation
         #detector.hinge(img, 13, 15)        #Hinge
         #detector.hipmove(img, 23)          #Hip move
-        detector.headmove(img, 7)         #Head move
+        detector.headmove(img, 7)          #Head move
 
 
     cv2.imshow("Image", img)

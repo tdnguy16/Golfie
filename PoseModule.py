@@ -4,6 +4,9 @@ import time
 import math
 import csv
 import statistics
+from numpy.random import seed
+from numpy.random import randn
+from numpy import percentile
 
 class poseDetector():
 
@@ -121,16 +124,23 @@ class poseDetector():
         # Append data to list
         self.data.append(angle)
 
+        # Remove outliners using IQR
+        q25, q75 = percentile(self.data, 25), percentile(self.data, 75)
+        iqr = q75 - q25
+        cut_off = iqr * 1.5
+        lower, upper = q25 - cut_off, q75 + cut_off
+        clean_data = [x for x in self.data if x > lower and x < upper]
+
         # Save angle data to csv file
         header = ['Spine Angle']
         with open('spineangle.csv', 'w', encoding='UTF8', newline='') as f:
             writer = csv.writer(f)
             writer.writerow(header)
-            for val in self.data:
+            for val in clean_data:
                 writer.writerow([val])
 
-        if len(self.data) > 2:
-            standarddev = format(statistics.stdev(self.data), '.2f')
+        if len(clean_data) > 2:
+            standarddev = format(statistics.stdev(clean_data), '.2f')
 
             # Draw
             if draw:
@@ -161,8 +171,24 @@ class poseDetector():
         x1, y1 = self.lmList[p1][1:]
         self.data.append(x1)
 
-        if draw:
-            cv2.line(img, (int(self.data[0]), int(y1)-300), (int(self.data[0]), int(y1)+300), (0, 255, 0), 3)
+        # Remove outliners using IQR
+        q25, q75 = percentile(self.data, 25), percentile(self.data, 75)
+        iqr = q75 - q25
+        cut_off = iqr * 1.5
+        lower, upper = q25 - cut_off, q75 + cut_off
+        clean_data = [x for x in self.data if x > lower and x < upper]
+
+        # Save angle data to csv file
+        header = ['Head move']
+        with open('head_move.csv', 'w', encoding='UTF8', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(header)
+            for val in clean_data:
+                writer.writerow([val])
+
+        if len(clean_data) > 2:
+            if draw:
+                cv2.line(img, (int(clean_data[0]), int(y1)-300), (int(clean_data[0]), int(y1)+300), (0, 255, 0), 3)
 
     def lag(self, img, p1, p2, p3, p4, draw=True):
         # Get the landmarks
