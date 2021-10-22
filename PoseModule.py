@@ -154,7 +154,7 @@ class poseDetector():
                 cv2.circle(img, (int(x3), int(y3)), 15, (0, 0, 255), 2)
                 cv2.putText(img, str(int(angle)),(int(x2)-90,int(y2)+20),
                             cv2.FONT_HERSHEY_PLAIN,2,(0,0,255),2)
-                cv2.putText(img, str(standarddev), (int(x2) - 90, int(y2) + -200),
+                cv2.putText(img, str(standarddev), (int(x2) - 90, int(y2) + -100),
                             cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 255), 2)
 
     def hipmove(self, img, p1, draw = True):
