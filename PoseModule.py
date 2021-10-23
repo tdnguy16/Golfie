@@ -29,6 +29,7 @@ class poseDetector():
         self.trackCon = trackCon
 
         self.data = []
+        self.data1 = []
         self.mpDraw = mp.solutions.drawing_utils
         self.mpPose = mp.solutions.pose
         self.pose = self.mpPose.Pose(self.mode, self.model_complexity, self.smooth_landmarks,self.enable_segmentation,self.smooth_segmentation,self.detectionCon, self.trackCon)
@@ -254,6 +255,33 @@ class poseDetector():
             cv2.line(img, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 3)
             cv2.line(img, (int(x2), int(y2)), (int(x3), int(y3)), (0, 255, 0), 3)
 
+    def movetracing(self, img, p1, draw = True):
+
+        # Get the landmarks
+        x, y = self.lmList[p1][1:]
+
+        # Append data to list
+        self.data.append(x)
+        self.data1.append(y)
+
+        # Remove outliners using IQR
+        q25, q75 = percentile(self.data, 25), percentile(self.data, 75)
+        iqr = q75 - q25
+        cut_off = iqr * 1.5
+        lower, upper = q25 - cut_off, q75 + cut_off
+        clean_data = [x for x in self.data if x > lower and x < upper]
+
+        q25, q75 = percentile(self.data1, 25), percentile(self.data1, 75)
+        iqr = q75 - q25
+        cut_off = iqr * 1.5
+        lower, upper = q25 - cut_off, q75 + cut_off
+        clean_data = [x for x in self.data1 if x > lower and x < upper]
+
+        # Draw
+        if draw:
+            for x in self.data:
+                cv2.circle(img, (int(x), int(y)), 2, (0, 0, 255), cv2.FILLED)
+                #cv2.circle(img, (int(x1), int(y1)), 15, (0, 0, 255), 2)
 
 
 
